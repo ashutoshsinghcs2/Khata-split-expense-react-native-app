@@ -5,7 +5,6 @@ import {
 import { useState, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { addTransaction, getTransactions, getBalance } from '../db/database';
-import Screen from '../components/Screen';
 
 export default function CustomerDetail({ route }) {
   const { customerId, name } = route.params;

@@ -100,6 +100,28 @@ export const getBalance = (customerId) => {
   return gave - got;
 };
 
+// ---------- Udhar totals ----------
+export const getUdharTotals = () => {
+  const customers = getCustomers();
+  let toReceive = 0;
+  let toGive = 0;
+
+  customers.forEach(c => {
+    const balance = getBalance(c.id); // positive = they owe you, negative = you owe them
+    if (balance > 0) {
+      toReceive += balance;
+    } else if (balance < 0) {
+      toGive += Math.abs(balance);
+    }
+  });
+
+  return {
+    toReceive,
+    toGive,
+    net: toReceive - toGive,
+  };
+};
+
 // ---------- Groups ----------
 export const createGroup = (name, description, currency) => {
   const result = db.runSync(
@@ -109,6 +131,18 @@ export const createGroup = (name, description, currency) => {
   const groupId = result.lastInsertRowId;
   db.runSync('INSERT INTO group_members (group_id, name, is_me) VALUES (?, ?, 1)', [groupId, 'You']);
   return groupId;
+};
+
+// ---------- Delete Group ----------
+export const deleteGroup = (groupId) => {
+  const expenses = db.getAllSync('SELECT id FROM group_expenses WHERE group_id = ?', [groupId]);
+  expenses.forEach(e => {
+    db.runSync('DELETE FROM expense_shares WHERE expense_id = ?', [e.id]);
+  });
+  db.runSync('DELETE FROM group_expenses WHERE group_id = ?', [groupId]);
+  db.runSync('DELETE FROM settlements WHERE group_id = ?', [groupId]);
+  db.runSync('DELETE FROM group_members WHERE group_id = ?', [groupId]);
+  db.runSync('DELETE FROM groups WHERE id = ?', [groupId]);
 };
 
 export const getGroups = () => db.getAllSync('SELECT * FROM groups ORDER BY date DESC');

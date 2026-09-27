@@ -2,6 +2,7 @@ import { View, Text, FlatList, Button, Alert, StyleSheet } from 'react-native';
 import { useState, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { getExpenseDetail, deleteExpense } from '../db/database';
+import Screen from '../components/Screen';
 
 export default function ExpenseDetail({ route, navigation }) {
   const { expenseId } = route.params;
@@ -22,7 +23,7 @@ export default function ExpenseDetail({ route, navigation }) {
   const { expense, shares } = data;
 
   return (
-    <View style={{ flex: 1, padding: 20 }}>
+    <Screen style={{ flex: 1, padding: 20 }}>
       <Text style={styles.title}>{expense.description || 'Expense'}</Text>
       <Text style={styles.amount}>₹{expense.amount}</Text>
       <Text style={{ color: '#777', marginBottom: 16 }}>Paid by {expense.paid_by_name}</Text>
@@ -44,7 +45,7 @@ export default function ExpenseDetail({ route, navigation }) {
       <View style={{ marginTop: 24 }}>
         <Button title="Delete Expense" color="#e74c3c" onPress={handleDelete} />
       </View>
-    </View>
+    </Screen>
   );
 }
 
